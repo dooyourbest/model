@@ -24,13 +24,13 @@ class Db():
 		self.cursor.execute(sql)
 		results = self.cursor.fetchall()
 		return results;
-	def insert(self,**arg):
-		print arg
-		exit()
+	def insert(self):
+		data={id:1}
 		str=''
 		key=' ('
 		value=' ('
 		for line in data:
+			
 			key=key+line+','
 			value=value+','
 		key=key[:-1]+') '
@@ -41,5 +41,6 @@ class Db():
 
 
 test=Db('tp_file')
-test.query({id:1});
+data={id:1}
+test.insert();
 
