@@ -1,0 +1,6 @@
+path:/Users/baidu/doc
+host:localhost
+user:root
+pwd:
+dbname:doc
+part:3306
