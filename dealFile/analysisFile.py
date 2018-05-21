@@ -21,6 +21,7 @@ class analysisFile():
         self.singleComments={}
         self.fileList = []   
         self.readFile()
+        self.index=[]
     def readFile(self):
         """遍历文件 ，针对每一行做处理"""
         lineNum=1;
@@ -63,14 +64,6 @@ class analysisFile():
                 self.textStruct[line]
             except:
                 pass
-    def dealFunction(self, line):
-        res=re.search('\(.*\)',line)
-        try:
-            funcStr = res.group()
-            params=funcStr[1:-1].split(',')
-            return params
-        except:
-            pass
     def organizaCodeStruct(self):
         textStruct=self.textStruct
         for line in range(1,self.fileAllLine):
@@ -102,7 +95,31 @@ class analysisFile():
                 self.singleComments={}
             except:
                 print self.singleComments
-                exit()
+                print 'error'
+                exit(123)
+
+    def createIndex(self):
+        for i in range(len(self.codeStruct)):
+            type = self.codeStruct[i]['name']
+            lineNum = self.codeStruct[i]['lineNum']
+            functionMsg = {}
+            if type=='function':
+                functionMsg['function']= self.getFunction(lineNum)
+                if self.codeStruct[i-1]['name']=='CommentsBlock':
+                    comments=self.codeStruct[i-1]['lineNum'].split(':')
+                    if int(lineNum)-int(comments[1])<2:
+                        commentsList=[]
+                        print comments
+                        for i in range(int(comments[0]), int(comments[1])):
+                            commentsList.append(self.fileList[i])
+                            functionMsg['comments'] =','.join(commentsList)
+                self.index.append(functionMsg);
+        print self.index
+
+
+
+               
+
     def getCLassName(self,lineNumber):
         line = self.fileList[lineNumber]
         res = re.search('class\s+\w+\s*',line)
@@ -113,9 +130,26 @@ class analysisFile():
         res = re.search('extends\s+\w+\s*',line)
         self.extendsName = res.group()[7:].strip()
 
+    def getFunction(self, lineNumber):
+        functionDict={}
+        line =self.fileList[lineNumber]
+        res = re.search('function\s+\w+\s*',line)
+        functionName = res.group()[8:].strip()
+        functionDict['name'] = functionName
+        res=re.search('\(.*\)',line)
+        try:
+            funcStr = res.group()
+            params=funcStr[1:-1].split(',')
+            functionDict['params']=params
+        except:
+            pass
+        return functionDict
+    
+
 
 any=analysisFile('../test.php')
 any.readFile()     
 any.analysisFileStruct()
 any.organizaCodeStruct()
+any.createIndex()
 
