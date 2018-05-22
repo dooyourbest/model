@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 import re
-class analysisFile():
+class AnalysisFile():
     def __init__(self, filePath):
         self.limitConf={}
         self.limitConf['lineComment']='^\s*//'
@@ -111,7 +111,7 @@ class analysisFile():
                         commentsList=[]
                         print comments
                         for i in range(int(comments[0]), int(comments[1])):
-                            commentsList.append(self.fileList[i])
+                            commentsList.append(self.fileList[i].strip())
                             functionMsg['comments'] =','.join(commentsList)
                 self.index.append(functionMsg);
         print self.index
@@ -133,7 +133,8 @@ class analysisFile():
     def getFunction(self, lineNumber):
         functionDict={}
         line =self.fileList[lineNumber]
-        res = re.search('function\s+\w+\s*',line)
+        res = re.search('function\s+.+\s*',line)
+        print line;
         functionName = res.group()[8:].strip()
         functionDict['name'] = functionName
         res=re.search('\(.*\)',line)
@@ -147,7 +148,7 @@ class analysisFile():
     
 
 
-any=analysisFile('../test.php')
+any=AnalysisFile('../test.php')
 any.readFile()     
 any.analysisFileStruct()
 any.organizaCodeStruct()

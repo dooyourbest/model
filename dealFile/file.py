@@ -2,12 +2,19 @@
 # coding=utf-8
 import sys
 import os
+from analysisFile import AnalysisFile
+from common import Common
 class File():
 	def __init__(self):
-		fileconf=open('conf.txt');
 		self.allfile=[]
 		self.count=0
-		conf_dict={}
+		conf_dict=Common.readconf()
+                if 'path' not in conf_dict:
+                        path=os.path.realpath(__file__)
+                        pathRes='/'.join(path.split('/')[:-2])
+                print path
+                print pathRes
+                exit()
 		for line in fileconf:
 			line = line.strip().split(':');
 			conf_dict[line[0]]=line[1];
@@ -58,6 +65,6 @@ class File():
 
 
 
-test=file()
+test=File()
 test.getListDir(test.path)
 test.sortDir(test.allfile)
