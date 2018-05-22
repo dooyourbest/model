@@ -7,9 +7,9 @@ class AnalysisFile():
         self.limitConf['lineComment']='^\s*//'
         self.limitConf['blockStart'] = '^\s*/\*+'
         self.limitConf['blockEnd'] = '^\s*\*/'
-        self.limitConf['function'] = 'function\s'
-        self.limitConf['class'] = '^\s*class.*'
-        self.limitConf['extends'] ='extends'
+        self.limitConf['function'] = '^\s*(public|private|protect|\s*)\s*function\s+'
+        self.limitConf['class'] = '^\s*class\s+.*'
+        self.limitConf['extends'] ='\s+extends\s+'
         self.className=''
         self.extendsName=''
         self.file = open(filePath);
@@ -19,7 +19,8 @@ class AnalysisFile():
         self.codeStruct=[]
         self.fileAllLine=0
         self.singleComments={}
-        self.fileList = []   
+        self.fileList = []  
+        self.filePath=filePath 
         self.readFile()
         self.index=[]
     def readFile(self):
@@ -36,7 +37,6 @@ class AnalysisFile():
             del self.text['class']
         if 'extends' in self.text:
             self.getExtends(self.text['extends'][0])
-            print self.text;
             del self.text['extends'];
     def analysis(self, line, lineNum):
         limitConf = self.limitConf
@@ -68,7 +68,6 @@ class AnalysisFile():
         textStruct=self.textStruct
         for line in range(1,self.fileAllLine):
             try:
-                print textStruct[line],line
                 if textStruct[line]!='blockStart' and textStruct[line]!='blockEnd':
                     msg={}
                     msg['name']=textStruct[line];
@@ -78,7 +77,9 @@ class AnalysisFile():
                     self.getComments(line,textStruct[line])
             except:
                 pass
-        print self.codeStruct
+        # print self.filePath
+        # for line in self.codeStruct:
+            # print line
                 
     def getComments(self, line, type):
         if type == 'blockStart':
@@ -105,52 +106,100 @@ class AnalysisFile():
             functionMsg = {}
             if type=='function':
                 functionMsg['function']= self.getFunction(lineNum)
-                if self.codeStruct[i-1]['name']=='CommentsBlock':
+                if self.codeStruct[i-1]['name']=='CommentsBlock' and i>=1:  # 注意list[0-1]=list[-1]
                     comments=self.codeStruct[i-1]['lineNum'].split(':')
                     if int(lineNum)-int(comments[1])<2:
                         commentsList=[]
-                        print comments
-                        for i in range(int(comments[0]), int(comments[1])):
+                        for i in range(int(comments[0]), int(comments[1])+1):
                             commentsList.append(self.fileList[i].strip())
-                            functionMsg['comments'] =','.join(commentsList)
+                            functionMsg['comments'] =';'.join(commentsList)
+                    else:
+                        functionMsg['comments']=''
+                else:
+                    functionMsg['comments'] =''
+                # try:
+                #     print functionMsg['comments']
+                # except:
+                #     print self.filePath
+                #     print self.codeStruct[i]['lineNum'];
                 self.index.append(functionMsg);
-        print self.index
-
-
-
-               
 
     def getCLassName(self,lineNumber):
         line = self.fileList[lineNumber]
         res = re.search('class\s+\w+\s*',line)
-        self.className=res.group()[5:].strip()
-
+        try:
+            self.className=res.group()[5:].strip()
+        except:
+            print 'error:'
+            print self.filePath
+            print 'lineNumber:'+str(lineNumber)
+            print 'get Class error'
+            exit()
     def getExtends(self,lineNumber):
         line = self.fileList[lineNumber]
-        res = re.search('extends\s+\w+\s*',line)
-        self.extendsName = res.group()[7:].strip()
+        res = re.search('\s{1}extends\s+\w+\s*',line)
+        try:
+            self.extendsName = res.group().strip()[7:].strip()
+        except:
+            print 'error:'
+            print self.filePath
+            print 'lineNumber:'+str(lineNumber)
+            print 'get Extends error'
+            exit()
 
     def getFunction(self, lineNumber):
         functionDict={}
         line =self.fileList[lineNumber]
-        res = re.search('function\s+.+\s*',line)
-        print line;
-        functionName = res.group()[8:].strip()
-        functionDict['name'] = functionName
+        res = re.search('function\s+.+\(',line)
+        try:
+            functionName = res.group().strip()[8:-1].strip()
+            functionDict['name'] = functionName
+        except:
+            print 'error:'
+            print self.filePath
+            print 'lineNumber:'+str(lineNumber)
+            print 'get Function error'
+            exit()
         res=re.search('\(.*\)',line)
         try:
             funcStr = res.group()
-            params=funcStr[1:-1].split(',')
+            params=','.join(funcStr[1:-1].split(','))
             functionDict['params']=params
         except:
-            pass
+            functionDict['params']=''
         return functionDict
-    
+    def getfileMsg(self):
+        self.analysisFileStruct()
+        self.organizaCodeStruct()
+        self.createIndex() 
+        list=[]
+        if self.className=='' and self.extendsName=='' and self.index==[]:
+            return False
+        if self.index:
+            for line in self.index:
+                try:
+                    msg={}
+                    msg['className']=self.className
+                    msg['extends']=self.extendsName
+                    msg['function_name']=line['function']['name']
+                    msg['params']=line['function']['params']
+                    # msg['comments']=line['comments']
+                    msg['comments']=''
+                except:
+                    print line
+                    exit()
+                list.append(msg)
+        else:
+            msg={}
+            msg['params']=''
+            msg['className']=self.className
+            msg['extends']=self.extendsName
+            msg['function_name']=''
+            msg['comments']=''
+            list.append(msg)
+        return list
 
+# any=AnalysisFile('../test.php')
+# any.getfileMsg()
 
-any=AnalysisFile('../test.php')
-any.readFile()     
-any.analysisFileStruct()
-any.organizaCodeStruct()
-any.createIndex()
 
