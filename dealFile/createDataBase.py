@@ -3,12 +3,19 @@
 import MySQLdb
 conn = MySQLdb.connect(host='127.0.0.1', user='root', passwd='')
 cursor=conn.cursor()
-cursor.execute("""create database if not exists doc""")
+cursor.execute("create database if not exists doc")
 conn.select_db('doc')
+try:
+      cursor.execute("drop table tp_file")
+      cursor.execute("drop table tp_function")
+except:
+      pass
 cursor.execute("CREATE TABLE `tp_file` ( \
       `id` bigint(12) NOT NULL AUTO_INCREMENT COMMENT 'ID',\
       `file_name` varchar(128) NOT NULL DEFAULT '0' COMMENT '文件名',\
       `pid` bigint(21) NOT NULL DEFAULT 0 COMMENT '上级id',\
+      `type` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'isdir=0,isfile=1',\
+      `level` int(10) NOT NULL DEFAULT 0 COMMENT '等级',\
       `path_name` varchar(128) NOT NULL DEFAULT ''  COMMENT '路径名',\
       `file_msg` varchar(128) NOT NULL DEFAULT '' COMMENT '文件信息',\
       `class_name` varchar(128) NOT NULL DEFAULT ''COMMENT '类名',\

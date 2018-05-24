@@ -4,6 +4,7 @@ import os
 from analysisFile import AnalysisFile
 from common import Common
 from sql import Db
+import MySQLdb
 class File():
 	def __init__(self):
 		self.allfile=[]
@@ -34,17 +35,7 @@ class File():
 				filetype=file.split('.')[-1]
 				subpid=self.addFileMsg(msg,pid)
 				if filetype=='php':
-					self.getfileMsg(filepath)
-	def sortDir(self,sortDir):
-		# print sortDir
-		# for line in sortDir:
-		# 	print line 
-		data={};
-			# level = sortDir[line][0]
-			# if level in dir:
-			# 	dir[level].append([line,sortDir[line][1]])
-			# else:
-			# 	dir[level]=[[line,sortDir[line][1]]]
+					self.getfileMsg(filepath,subpid)
 	def getNum(self):
 			self.count=self.count+1
 	
@@ -63,17 +54,18 @@ class File():
 		#msg : [level,filepath,file,pid,type][0, '/Users/baidu/doc/.editorconfig', '.editorconfig', 0, 'isfile']
 		db=Db('tp_file')
 		data={}
-		# data['level']=msg[0]
+		data['level']=msg[0]
 		data['path_name']=msg[1]
 		data['file_name']=msg[2]
 		data['pid']=msg[3]
-		# data['type']=msg[4]
-		# if data['type']=='isdir':
-		# 	data['type']=0
-		# else:
-		# 	data['type']=1
+		data['type']=msg[4]
+		if data['type']=='isdir':
+			data['type']=0
+		else:
+			data['type']=1
 		resid=db.insert(data);
 		return resid
+
 	def addClassMsg(self,msg,pid):
 		dbclass=Db('tp_function')
 		data={}
@@ -82,15 +74,19 @@ class File():
 			data['function_name']=line['function_name']
 			data['params']=line['function_name']
 			data['class_extends']=line['extends']
-			data['function_msg']=line['comments']
+			content = MySQLdb.escape_string(line['comments'])
+			data['function_msg']=content
 			#data['classname']=line['className']
-		res=dbclass.insert(data);
-		return res
+			# print data;
+			# exit()
+			res=dbclass.insert(data);
+
 
 		#exit()
 	def getfileMsg(self,path,pid=0):
 		any=AnalysisFile(path);
 		resList=any.getfileMsg()
+		print path;
 		if resList:
 			self.addClassMsg(resList,pid)
 		# print resList

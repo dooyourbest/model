@@ -150,7 +150,7 @@ class AnalysisFile():
     def getFunction(self, lineNumber):
         functionDict={}
         line =self.fileList[lineNumber]
-        res = re.search('function\s+.+\(',line)
+        res = re.search('function\s+.+?\(+?',line)
         try:
             functionName = res.group().strip()[8:-1].strip()
             functionDict['name'] = functionName
@@ -162,7 +162,7 @@ class AnalysisFile():
             exit()
         res=re.search('\(.*\)',line)
         try:
-            funcStr = res.group()
+            # funcStr = res.group()
             params=','.join(funcStr[1:-1].split(','))
             functionDict['params']=params
         except:
@@ -183,8 +183,8 @@ class AnalysisFile():
                     msg['extends']=self.extendsName
                     msg['function_name']=line['function']['name']
                     msg['params']=line['function']['params']
-                    # msg['comments']=line['comments']
-                    msg['comments']=''
+                    msg['comments']=line['comments']
+                    # msg['comments']=''
                 except:
                     print line
                     exit()
