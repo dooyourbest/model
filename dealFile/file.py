@@ -72,7 +72,7 @@ class File():
 		for line in msg:
 			data['pid']=str(pid)
 			data['function_name']=line['function_name']
-			data['params']=line['function_name']
+			data['params']=line['params']
 			data['class_extends']=line['extends']
 			content = MySQLdb.escape_string(line['comments'])
 			data['function_msg']=content

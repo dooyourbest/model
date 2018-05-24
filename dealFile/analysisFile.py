@@ -162,7 +162,7 @@ class AnalysisFile():
             exit()
         res=re.search('\(.*\)',line)
         try:
-            # funcStr = res.group()
+            funcStr = res.group()
             params=','.join(funcStr[1:-1].split(','))
             functionDict['params']=params
         except:
