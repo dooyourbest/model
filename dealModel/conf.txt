@@ -1,0 +1,8 @@
+host:localhost
+user:root
+pwd:
+dbname:model
+part:3306
+rootDir:/Users/baidu/Desktop/mind/model
+sampleDir:/Users/baidu/Desktop/mind/model/sample
+mindResDir:/Users/baidu/Desktop/mind/model/mindRes

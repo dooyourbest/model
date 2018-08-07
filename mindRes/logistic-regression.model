@@ -1,0 +1,24 @@
+shape of dataset, x, y: (77150, 13)	(77150, 11)	(77150,)
+
+x_train_min(parameters):
+[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+
+x_train_max(parameters):
+[ 1817.    93.     3.     2.     1.   131.     3.    11.    27.     8.
+    24.]
+
+coefficient(parameters):
+[[ 9.37687604  1.10969748  1.50006975 -0.4474724  -0.05029381  0.38094593
+   0.49955162  2.85485358  0.07914471  1.94305993 -0.32040098]]
+intercept(parameters):[-4.01118295]
+
+y_test: [ 0.  0.  0. ...,  0.  0.  0.]
+report: [False False False ..., False False False]
+
+             precision    recall  f1-score   support
+
+        neg       0.98      1.00      0.99      7570
+        pos       0.00      0.00      0.00       145
+
+avg / total       0.96      0.98      0.97      7715
+
