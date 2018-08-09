@@ -19,10 +19,12 @@ def main():
     :return:
     """
     # 日志文件清空
-    mindresdir=Common.getMindResDir()
+    conf=Common.readconf()
+    sampleDir=conf['sampleDir']
+    mindresdir=conf['mindResDir']
     print mindresdir;
-    exit();
-    sample = sys.argv[1]
+    exit()
+    sample=sys.argv[1]
     fp_model = open(mindresdir+"/logistic-regression.model", "w")
     fp_para = open(mindresdir+"/logistic-regression.para", "w")
 
